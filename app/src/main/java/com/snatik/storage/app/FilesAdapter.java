@@ -42,13 +42,6 @@ public class FilesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 mListener.onClick(file);
             }
         });
-//        fileViewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-//            @Override
-//            public boolean onLongClick(View view) {
-//                mListener.onLongClick(file);
-//                return true;
-//            }
-//        });
         fileViewHolder.mName.setText(file.getName());
         fileViewHolder.mIcon.setImageResource(file.isDirectory() ? R.drawable.ic_folder_primary_24dp : R.drawable
                 .ic_file_primary_24dp);
