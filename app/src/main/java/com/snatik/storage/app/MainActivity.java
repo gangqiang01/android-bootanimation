@@ -1,11 +1,14 @@
 package com.snatik.storage.app;
 
 import android.Manifest;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -60,10 +63,12 @@ public class MainActivity extends AppCompatActivity implements
         mFilesAdapter = new FilesAdapter(getApplicationContext());
         mFilesAdapter.setListener(this);
         mRecyclerView.setAdapter(mFilesAdapter);
+        disablebtnstyle(mCustomize);
         mCustomize.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 customize();
+                showNormalDialog();
             }
         });
         // load files
@@ -78,6 +83,7 @@ public class MainActivity extends AppCompatActivity implements
                 int status = p.waitFor();
                 if(status != 0){
                     Helper.showSnackbar("change file permission error", mRecyclerView);
+                    return;
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -88,6 +94,35 @@ public class MainActivity extends AppCompatActivity implements
         Helper.showSnackbar("Bootanimation Success", mRecyclerView);
     }
 
+    private void showNormalDialog(){
+        final AlertDialog.Builder normalDialog =
+                new AlertDialog.Builder(MainActivity.this);
+//        normalDialog.setTitle("我是一个普通Dialog");
+        normalDialog.setMessage("bootanimation has been set up successfully, whether or not to reboot?");
+        normalDialog.setPositiveButton("Yes",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //...To-do
+                        try {
+                            Intent intent = new Intent(Intent.ACTION_REBOOT);
+                            intent.putExtra("nowait", 1);
+                            intent.putExtra("interval", 1);
+                            intent.putExtra("window", 0);
+                            startActivity(intent);
+                        } catch (Exception e){
+                            new AlertDialog.Builder(MainActivity.this).setTitle("Error").setMessage(e.getMessage()).setPositiveButton("OK", null).show();
+                        }
+                    }
+                });
+        normalDialog.setNegativeButton("No",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
+        normalDialog.show();
+    }
     private void showFiles(String path) {
         mPathView.setText(path);
         List<File> files = mStorage.getFiles(path);
@@ -113,14 +148,30 @@ public class MainActivity extends AppCompatActivity implements
         if (file.isDirectory()) {
             mTreeSteps++;
             String path = file.getAbsolutePath();
-            showFiles(path,".*\\.zip$");
+            disablebtnstyle(mCustomize);
+            showFiles(path);
         } else {
-            this.filepath = file.getAbsolutePath();
-            mPathView.setText(this.filepath);
+            if(file.getName().matches(".*\\.zip$")){
+                this.filepath = file.getAbsolutePath();
+                mPathView.setText(this.filepath);
+                ablebtnstyle(mCustomize);
+
+            }else{
+                disablebtnstyle(mCustomize);
+                Helper.showSnackbar("Bootanimation File must be a zip package", mRecyclerView);
+            }
+
 
         }
     }
-
+    private void ablebtnstyle(Button btn){
+        btn.setBackgroundDrawable(getResources().getDrawable(R.drawable.btn_bg_abled));
+        btn.setEnabled(true);
+    }
+    private void disablebtnstyle(Button btn){
+        btn.setBackgroundDrawable(getResources().getDrawable(R.drawable.btn_bg_disable));
+        btn.setEnabled(false);
+    }
     @Override
     public void onBackPressed() {
         if (mTreeSteps > 0) {

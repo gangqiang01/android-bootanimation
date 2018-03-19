@@ -88,7 +88,7 @@
                     android:layout_marginTop="5dp"
                     android:layout_marginBottom="5dp"
                     android:layout_marginRight="15dp"
-                    android:background="@drawable/btn_bg_block"
+                    android:background="@drawable/btn_bg_disable"
                     android:paddingLeft="2dp"
                     android:paddingRight="2dp"
                     android:textAllCaps="false"
