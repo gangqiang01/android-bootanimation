@@ -48,11 +48,13 @@ public class BootanimationActivity extends AppCompatActivity implements
 
         mStorage = new Storage(getApplicationContext());
 
+        String title_value = getIntent().getExtras().getString("title");
+
         setContentView(R.layout.activity_bootanimation);
 
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("Boot Animation");
+        getSupportActionBar().setTitle(title_value);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler);
         mPathView = (TextView) findViewById(R.id.path);
@@ -81,6 +83,7 @@ public class BootanimationActivity extends AppCompatActivity implements
         
         return super.onOptionsItemSelected(item);
     }
+
     private void customize(){
         mStorage.copy(this.filepath,topath);
         try {
@@ -129,6 +132,7 @@ public class BootanimationActivity extends AppCompatActivity implements
                 });
         normalDialog.show();
     }
+
     private void showFiles(String path) {
         mPathView.setText(path);
         List<File> files = mStorage.getFiles(path);
@@ -139,6 +143,7 @@ public class BootanimationActivity extends AppCompatActivity implements
         mFilesAdapter.setFiles(files);
         mFilesAdapter.notifyDataSetChanged();
     }
+
     private void showFiles(String path,String Regex) {
         mPathView.setText(path);
         List<File> files = mStorage.getFiles(path, Regex);
@@ -149,6 +154,7 @@ public class BootanimationActivity extends AppCompatActivity implements
         mFilesAdapter.setFiles(files);
         mFilesAdapter.notifyDataSetChanged();
     }
+
     @Override
     public void onClick(File file) {
         if (file.isDirectory()) {
@@ -170,14 +176,17 @@ public class BootanimationActivity extends AppCompatActivity implements
 
         }
     }
+
     private void ablebtnstyle(Button btn){
         btn.setBackgroundDrawable(getResources().getDrawable(R.drawable.btn_bg_abled));
         btn.setEnabled(true);
     }
+
     private void disablebtnstyle(Button btn){
         btn.setBackgroundDrawable(getResources().getDrawable(R.drawable.btn_bg_disable));
         btn.setEnabled(false);
     }
+
     @Override
     public void onBackPressed() {
         if (mTreeSteps > 0) {

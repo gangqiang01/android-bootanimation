@@ -6,12 +6,12 @@
     android:orientation="vertical">
     <include layout="@layout/toolbar"/>
         <ImageView
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="130dp"
+            android:layout_height="130dp"
             android:layout_gravity="center"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="42dp"
             android:layout_marginBottom="25dp"
-            android:src="@drawable/app_logo"/>
+            android:src="@drawable/bootapply_logo"/>
 
 
     <!--<TextView-->

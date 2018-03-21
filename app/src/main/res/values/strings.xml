@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Boot Animation</string>
+    <string name="app_name">Boot Apply</string>
     <string name="empty_file">please select boot animation zip package</string>
     <string name="exit_file">file alread exit</string>
     <string name="customizesuc">boot animation customize success</string>

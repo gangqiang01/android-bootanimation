@@ -12,6 +12,7 @@ import android.widget.Toolbar;
  */
 
 public class MainActivity extends AppCompatActivity {
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, BootanimationActivity.class);
+                intent.putExtra("title","Boot Animation");
                 startActivity(intent);
             }
         });
@@ -37,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, BootlogoActivity.class);
+                intent.putExtra("title","Boot Logo");
                 startActivity(intent);
             }
         });

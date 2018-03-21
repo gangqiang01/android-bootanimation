@@ -12,7 +12,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -21,7 +21,6 @@ import com.snatik.storage.Storage;
 import com.snatik.storage.helpers.OrderType;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
@@ -33,14 +32,10 @@ public class BootlogoActivity extends AppCompatActivity implements
     private FilesAdapter mFilesAdapter;
     private Storage mStorage;
     private TextView mPathView;
-    private TextView mMovingText;
     private Button mCustomize;
-    private View mMovingLayout;
     private int mTreeSteps = 0;
     private final String USBPATH = "/mnt/media_rw";
     private final String BASEPATH = "/";
-    private final String DATAPATH = "/data";
-    private final String topath = DATAPATH+"/bootanimation.zip";
     private String filepath = null;
 
     @Override
@@ -51,9 +46,11 @@ public class BootlogoActivity extends AppCompatActivity implements
 
         setContentView(R.layout.activity_bootanimation);
 
+        String title_value = getIntent().getExtras().getString("title");
+
         getSupportActionBar().setDisplayShowHomeEnabled(true); //设置返回键可用
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("Boot Logo");
+        getSupportActionBar().setTitle(title_value);
 
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler);
@@ -70,34 +67,28 @@ public class BootlogoActivity extends AppCompatActivity implements
         mCustomize.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                customize();
-                showNormalDialog();
+                BootLocalSocket();
             }
         });
         // load files
         showFiles(USBPATH);
         checkPermission();
     }
-    private void customize(){
-        mStorage.copy(this.filepath,topath);
-        try {
-           Process p = Runtime.getRuntime().exec("chmod 777 " + topath);
-            try{
-                int status = p.waitFor();
-                if(status != 0){
-                    Helper.showSnackbar("change file permission error", mRecyclerView);
-                    return;
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        Helper.showSnackbar("Bootlogo Success", mRecyclerView);
+
+    private void BootLocalSocket(){
+        Log.i("bootlogo",this.filepath);
+        HwtestService localsocket = new HwtestService();
+       int resultcode = localsocket.set_socket(0, this.filepath);
+       if(resultcode == 0){
+           showSuccessDialog();
+
+       }else{
+           Helper.showSnackbar("Bootlogo setting fail", mRecyclerView);
+       }
     }
 
-    private void showNormalDialog(){
+
+    private void showSuccessDialog(){
         final AlertDialog.Builder normalDialog =
                 new AlertDialog.Builder(BootlogoActivity.this);
         normalDialog.setMessage("bootlogo has been set up successfully, whether or not to reboot?");
@@ -125,6 +116,7 @@ public class BootlogoActivity extends AppCompatActivity implements
                 });
         normalDialog.show();
     }
+
     private void showFiles(String path) {
         mPathView.setText(path);
         List<File> files = mStorage.getFiles(path);
@@ -135,6 +127,7 @@ public class BootlogoActivity extends AppCompatActivity implements
         mFilesAdapter.setFiles(files);
         mFilesAdapter.notifyDataSetChanged();
     }
+
     private void showFiles(String path,String Regex) {
         mPathView.setText(path);
         List<File> files = mStorage.getFiles(path, Regex);
@@ -145,6 +138,7 @@ public class BootlogoActivity extends AppCompatActivity implements
         mFilesAdapter.setFiles(files);
         mFilesAdapter.notifyDataSetChanged();
     }
+
     @Override
     public void onClick(File file) {
         if (file.isDirectory()) {
@@ -153,27 +147,28 @@ public class BootlogoActivity extends AppCompatActivity implements
             disablebtnstyle(mCustomize);
             showFiles(path);
         } else {
-            if(file.getName().matches(".*\\.zip$")){
+            if(file.getName().matches(".*\\.bmp$")){
                 this.filepath = file.getAbsolutePath();
                 mPathView.setText(this.filepath);
                 ablebtnstyle(mCustomize);
 
             }else{
                 disablebtnstyle(mCustomize);
-                Helper.showSnackbar("Bootlogo image must be a zip package", mRecyclerView);
+                Helper.showSnackbar("Bootlogo image must be a bmp image", mRecyclerView);
             }
-
-
         }
     }
+
     private void ablebtnstyle(Button btn){
         btn.setBackgroundDrawable(getResources().getDrawable(R.drawable.btn_bg_abled));
         btn.setEnabled(true);
     }
+
     private void disablebtnstyle(Button btn){
         btn.setBackgroundDrawable(getResources().getDrawable(R.drawable.btn_bg_disable));
         btn.setEnabled(false);
     }
+
     @Override
     public void onBackPressed() {
         if (mTreeSteps > 0) {
